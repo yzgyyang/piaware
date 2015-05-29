@@ -5,7 +5,11 @@
 #
 #
 
-set adeptConfigFile "/root/.piaware"
+if {$::tcl_platform(platform) eq "windows"} {
+	set adeptConfigFile [file normalize "~/.piaware"]
+} else {
+	set adeptConfigFile "/root/.piaware"
+}
 
 #
 # load_adept_config - open and read in the adept config file.

@@ -660,7 +660,11 @@ namespace eval ::fa_adept {
 			}
 		}
 
-		catch {set message(uname) [exec /bin/uname --all]}
+		if {[catch {set message(uname) [exec /bin/uname --all]}]} {
+			if {$::tcl_platform(platform) eq "windows"} {
+				catch {set message(uname) [string trim [exec $::env(ComSpec) /C VER]]}
+			}
+		}
 
 		if {[info exists ::netstatus(program_30005)]} {
 			set message(adsbprogram) $::netstatus(program_30005)
@@ -738,26 +742,59 @@ namespace eval ::fa_adept {
 		# well, that didn't work, look at the entire output of ifconfig
 		# for a MAC address and use the first one we find
 
-		if {[catch {set fp [open "|ifconfig"]} catchResult] == 1} {
-			puts stderr "ifconfig command not found on this version of Linux, you may need to install the net-tools package and try again"
-			return ""
-		}
-
-		set mac ""
-		while {[gets $fp line] >= 0} {
-			set mac [::fa_adept::parse_mac_address_from_line $line]
-			set device ""
-			regexp {^([^ ]*)} $line dummy device
-			if {$mac != ""} {
-				# gotcha
-				set ::macAddress $mac
-				log_locally "no eth0 device, using $mac from device '$device'"
-				break
+		if {$::tcl_platform(platform) eq "windows"} {
+			if {[catch {set fp [open "|ipconfig /all"]} catchResult] == 1} {
+				puts stderr "ipconfig command not found on this version of Windows"
+				return ""
 			}
-		}
 
-		catch {close $fp}
-		return $mac
+			set adp ""
+			set mac ""
+			while {[gets $fp line] >= 0} {
+				if {[string length $adp] == 0} {
+					if {![regexp -- {^Ethernet adapter (.*):$} $line dummy adp] && \
+							![regexp -- {^Wireless LAN adapter (.*):$} $line dummy adp]} {
+						continue
+					}
+				}
+				if {![string match {   Physical Address. . . . . . . . . :*} $line]} {
+					continue
+				}
+				set mac [::fa_adept::parse_mac_address_from_line $line]
+				set device ""
+				regexp {^([^ ]*)} $line dummy device
+				if {$mac != ""} {
+					# gotcha
+					set ::macAddress $mac
+					log_locally "no eth0 device, using $mac from device '$device'"
+					break
+				}
+			}
+
+			catch {close $fp}
+			return $mac
+		} else {
+			if {[catch {set fp [open "|ifconfig"]} catchResult] == 1} {
+				puts stderr "ifconfig command not found on this version of Linux, you may need to install the net-tools package and try again"
+				return ""
+			}
+
+			set mac ""
+			while {[gets $fp line] >= 0} {
+				set mac [::fa_adept::parse_mac_address_from_line $line]
+				set device ""
+				regexp {^([^ ]*)} $line dummy device
+				if {$mac != ""} {
+					# gotcha
+					set ::macAddress $mac
+					log_locally "no eth0 device, using $mac from device '$device'"
+					break
+				}
+			}
+
+			catch {close $fp}
+			return $mac
+		}
 	}
 
 	#

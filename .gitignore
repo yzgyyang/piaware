@@ -1,0 +1,5 @@
+*.fossil
+.fossil-settings
+.fslckout
+_FOSSIL_
+externals

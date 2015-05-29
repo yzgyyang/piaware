@@ -5,7 +5,14 @@
 # Copyright (C) 2014 FlightAware LLC, All Rights Reserved
 #
 
-lappend auto_path /usr/local/lib
+if {$::tcl_platform(platform) eq "windows"} {
+  lappend auto_path [file join [file dirname [info nameofexecutable]] lib]
+
+  package require twapi
+  twapi::create_mutex -name PiAware_Setup; # NOTE: Never closed.
+} else {
+  lappend auto_path /usr/local/lib
+}
 
 package require piaware
 package require fa_adept_client
