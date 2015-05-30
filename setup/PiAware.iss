@@ -2,12 +2,13 @@
 ; PiAware.iss --
 ;
 ; Written by Joe Mistachkin.
-
+;
 ; See the file "license.terms" for information on usage and redistribution of
 ; this file, and for a DISCLAIMER OF ALL WARRANTIES.
 ;
 
 [Setup]
+
 AllowNoIcons=yes
 AlwaysShowComponentsList=no
 AppCopyright=Copyright © 2015 by FlightAware.  All rights reserved.
@@ -67,19 +68,19 @@ Components: Application; Root: HKLM; SubKey: Software\FlightAware\PiAware\1.0; V
 [Icons]
 Name: {group}\PiAware; IconFilename: {app}\bin\tclkit-8.6.4.exe; Filename: {app}\bin\tclkit-8.6.4.exe; Parameters: {app}\lib\piaware\main.tcl; WorkingDir: {app}\bin; Comment: Run PiAware; Flags: createonlyiffileexists
 Name: {group}\License; Filename: {app}\doc\LICENSE.txt; WorkingDir: {app}\doc; Comment: View License; Flags: createonlyiffileexists
-Name: {group}\Project Website; Filename: {app}\doc\PiAware.url; WorkingDir: {app}\doc; Comment: View Website; Flags: createonlyiffileexists
+Name: {group}\Website; Filename: {app}\doc\PiAware.url; WorkingDir: {app}\doc; Comment: View Website; Flags: createonlyiffileexists
 Name: {group}\README; Filename: {app}\doc\README.md; WorkingDir: {app}\doc; Comment: View ReadMe; Flags: createonlyiffileexists
 
 [Tasks]
 Components: Application; Name: Driver; Description: Install the device driver.; Flags: checkedonce
 
 [Run]
-Components: Application; Tasks: Driver; Filename: {sys}\rundll32.exe; Parameters: "{code:GetShortName|{app}\driver\x86\libusb0_x86.dll},usb_install_driver_np_rundll ""{app}\driver\RTL2838UHIDIR.inf"""; StatusMsg: "Installing X86 device driver (this may take a few seconds)..."; Check: IsX86()
-Components: Application; Tasks: Driver; Filename: {sys}\rundll32.exe; Parameters: "{code:GetShortName|{app}\driver\amd64\libusb0.dll},usb_install_driver_np_rundll ""{app}\driver\RTL2838UHIDIR.inf"""; StatusMsg: "Installing X64 device driver (this may take a few seconds)..."; Check: IsX64()
-Components: Application; Tasks: Driver; Filename: {sys}\rundll32.exe; Parameters: "{code:GetShortName|{app}\driver\ia64\libusb0.dll},usb_install_driver_np_rundll ""{app}\driver\RTL2838UHIDIR.inf"""; StatusMsg: "Installing IA64 device driver (this may take a few seconds)..."; Check: IsI64()
+Components: Application; Tasks: Driver; Filename: {sys}\rundll32.exe; Parameters: "{code:GetShortName|{app}\driver\x86\libusb0_x86.dll},usb_install_driver_np_rundll {code:GetShortName|{app}\driver\RTL2838UHIDIR.inf}"; StatusMsg: "Installing X86 device driver (this may take a few seconds)..."; Check: IsX86()
+Components: Application; Tasks: Driver; Filename: {sys}\rundll32.exe; Parameters: "{code:GetShortName|{app}\driver\amd64\libusb0.dll},usb_install_driver_np_rundll {code:GetShortName|{app}\driver\RTL2838UHIDIR.inf}"; StatusMsg: "Installing X64 device driver (this may take a few seconds)..."; Check: IsX64()
+Components: Application; Tasks: Driver; Filename: {sys}\rundll32.exe; Parameters: "{code:GetShortName|{app}\driver\ia64\libusb0.dll},usb_install_driver_np_rundll {code:GetShortName|{app}\driver\RTL2838UHIDIR.inf}"; StatusMsg: "Installing IA64 device driver (this may take a few seconds)..."; Check: IsI64()
 
 [UninstallRun]
-Components: Application; Tasks: Driver; Filename: {sys}\rundll32.exe; Parameters: "{code:GetShortName|{app}\driver\x86\libusb0_x86.dll},usb_uninstall_service_np_rundll ""{app}\driver\RTL2838UHIDIR.inf"""; StatusMsg: "Uninstalling X86 device driver (this may take a few seconds)..."; Check: IsX86()
-Components: Application; Tasks: Driver; Filename: {sys}\rundll32.exe; Parameters: "{code:GetShortName|{app}\driver\amd64\libusb0.dll},usb_uninstall_service_np_rundll ""{app}\driver\RTL2838UHIDIR.inf"""; StatusMsg: "Uninstalling X64 device driver (this may take a few seconds)..."; Check: IsX64()
-Components: Application; Tasks: Driver; Filename: {sys}\rundll32.exe; Parameters: "{code:GetShortName|{app}\driver\ia64\libusb0.dll},usb_uninstall_service_np_rundll ""{app}\driver\RTL2838UHIDIR.inf"""; StatusMsg: "Uninstalling IA64 device driver (this may take a few seconds)..."; Check: IsI64()
+Components: Application; Tasks: Driver; Filename: {sys}\rundll32.exe; Parameters: "{code:GetShortName|{app}\driver\x86\libusb0_x86.dll},usb_uninstall_service_np_rundll"; StatusMsg: "Uninstalling X86 device driver (this may take a few seconds)..."; Check: IsX86()
+Components: Application; Tasks: Driver; Filename: {sys}\rundll32.exe; Parameters: "{code:GetShortName|{app}\driver\amd64\libusb0.dll},usb_uninstall_service_np_rundll"; StatusMsg: "Uninstalling X64 device driver (this may take a few seconds)..."; Check: IsX64()
+Components: Application; Tasks: Driver; Filename: {sys}\rundll32.exe; Parameters: "{code:GetShortName|{app}\driver\ia64\libusb0.dll},usb_uninstall_service_np_rundll"; StatusMsg: "Uninstalling IA64 device driver (this may take a few seconds)..."; Check: IsI64()
 

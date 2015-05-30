@@ -7,12 +7,12 @@
 
 function IsX64(): Boolean;
 begin
-  Result := ProcessorArchitecture = paX64;
+  Result := Is64BitInstallMode and (ProcessorArchitecture = paX64);
 end;
 
 function IsI64(): Boolean;
 begin
-  Result := ProcessorArchitecture = paIA64;
+  Result := Is64BitInstallMode and (ProcessorArchitecture = paIA64);
 end;
 
 function IsX86(): Boolean;
