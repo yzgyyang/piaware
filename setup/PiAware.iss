@@ -21,8 +21,10 @@ AppUpdatesURL=https://flightaware.com/adsb/
 AppVerName=PiAware for Windows v1.0
 AppVersion=1.0
 AppReadmeFile={app}\README.md
+ArchitecturesAllowed=x86 x64 ia64
+ArchitecturesInstallIn64BitMode=x64 ia64
 ChangesEnvironment=yes
-DefaultDirName={pf}\FlightAware\PiAware
+DefaultDirName={pf32}\FlightAware\PiAware
 DefaultGroupName=FlightAware\PiAware
 LicenseFile=..\LICENSE.txt
 OutputBaseFilename=PiAwareSetup1.0
@@ -35,21 +37,25 @@ UninstallFilesDir={app}\uninstall
 VersionInfoVersion=1.0
 ExtraDiskSpaceRequired=5242880
 
+[Code]
+#include "Code.pas"
+
 [Components]
 Name: Application; Description: Required components.; Types: custom compact full
 
 [Files]
-Components: Application; Source: ..\..\externals\bin\Tcl\bin\*; DestDir: {app}\bin; Flags: restartreplace uninsrestartdelete recursesubdirs createallsubdirs
-Components: Application; Source: ..\..\externals\bin\Tcl\lib\*; DestDir: {app}\lib; Flags: restartreplace uninsrestartdelete recursesubdirs createallsubdirs
+Components: Application; Source: ..\externals\bin\Tcl\bin\*; DestDir: {app}\bin; Flags: restartreplace uninsrestartdelete recursesubdirs createallsubdirs
+Components: Application; Source: ..\externals\bin\Tcl\lib\*; DestDir: {app}\lib; Flags: restartreplace uninsrestartdelete recursesubdirs createallsubdirs
 Components: Application; Source: ..\LICENSE.txt; DestDir: {app}\doc; Flags: restartreplace uninsrestartdelete
 Components: Application; Source: ..\PiAware.url; DestDir: {app}\doc; Flags: restartreplace uninsrestartdelete
 Components: Application; Source: ..\README.md; DestDir: {app}\doc; Flags: restartreplace uninsrestartdelete isreadme
-Components: Application; Source: ..\doc\*.1; DestDir: {app}\doc; Flags: restartreplace uninsrestartdelete isreadme
+Components: Application; Source: ..\doc\*.1; DestDir: {app}\doc; Flags: restartreplace uninsrestartdelete
 Components: Application; Source: ..\package\*.tcl; DestDir: {app}\lib\fa_adept_packages; Flags: restartreplace uninsrestartdelete
 Components: Application; Source: ..\package\ca\DigiCertCA.crt; DestDir: {app}\lib\fa_adept_packages; Flags: restartreplace uninsrestartdelete
 Components: Application; Source: ..\programs\piaware\*; Excludes: Makefile; DestDir: {app}\lib\piaware; Flags: restartreplace uninsrestartdelete
 Components: Application; Source: ..\programs\piaware-config\*; Excludes: Makefile; DestDir: {app}\lib\piaware-config; Flags: restartreplace uninsrestartdelete
 Components: Application; Source: ..\programs\piaware-status\*; Excludes: Makefile; DestDir: {app}\lib\piaware-status; Flags: restartreplace uninsrestartdelete
+Components: Application; Source: ..\externals\bin\libusb\*; DestDir: {app}\driver; Flags: restartreplace uninsrestartdelete recursesubdirs createallsubdirs
 
 [Registry]
 Components: Application; Root: HKLM; SubKey: Software\FlightAware; Flags: uninsdeletekeyifempty
@@ -60,7 +66,20 @@ Components: Application; Root: HKLM; SubKey: Software\FlightAware\PiAware\1.0; V
 
 [Icons]
 Name: {group}\PiAware; IconFilename: {app}\bin\tclkit-8.6.4.exe; Filename: {app}\bin\tclkit-8.6.4.exe; Parameters: {app}\lib\piaware\main.tcl; WorkingDir: {app}\bin; Comment: Run PiAware; Flags: createonlyiffileexists
-Name: {group}\License; Filename: {app}\doc\license.terms; WorkingDir: {app}\doc; Comment: View License; Flags: createonlyiffileexists
+Name: {group}\License; Filename: {app}\doc\LICENSE.txt; WorkingDir: {app}\doc; Comment: View License; Flags: createonlyiffileexists
 Name: {group}\Project Website; Filename: {app}\doc\PiAware.url; WorkingDir: {app}\doc; Comment: View Website; Flags: createonlyiffileexists
 Name: {group}\README; Filename: {app}\doc\README.md; WorkingDir: {app}\doc; Comment: View ReadMe; Flags: createonlyiffileexists
+
+[Tasks]
+Components: Application; Name: Driver; Description: Install the device driver.; Flags: checkedonce
+
+[Run]
+Components: Application; Tasks: Driver; Filename: {sys}\rundll32.exe; Parameters: "{code:GetShortName|{app}\driver\x86\libusb0_x86.dll},usb_install_driver_np_rundll ""{app}\driver\RTL2838UHIDIR.inf"""; StatusMsg: "Installing X86 device driver (this may take a few seconds)..."; Check: IsX86()
+Components: Application; Tasks: Driver; Filename: {sys}\rundll32.exe; Parameters: "{code:GetShortName|{app}\driver\amd64\libusb0.dll},usb_install_driver_np_rundll ""{app}\driver\RTL2838UHIDIR.inf"""; StatusMsg: "Installing X64 device driver (this may take a few seconds)..."; Check: IsX64()
+Components: Application; Tasks: Driver; Filename: {sys}\rundll32.exe; Parameters: "{code:GetShortName|{app}\driver\ia64\libusb0.dll},usb_install_driver_np_rundll ""{app}\driver\RTL2838UHIDIR.inf"""; StatusMsg: "Installing IA64 device driver (this may take a few seconds)..."; Check: IsI64()
+
+[UninstallRun]
+Components: Application; Tasks: Driver; Filename: {sys}\rundll32.exe; Parameters: "{code:GetShortName|{app}\driver\x86\libusb0_x86.dll},usb_uninstall_service_np_rundll ""{app}\driver\RTL2838UHIDIR.inf"""; StatusMsg: "Uninstalling X86 device driver (this may take a few seconds)..."; Check: IsX86()
+Components: Application; Tasks: Driver; Filename: {sys}\rundll32.exe; Parameters: "{code:GetShortName|{app}\driver\amd64\libusb0.dll},usb_uninstall_service_np_rundll ""{app}\driver\RTL2838UHIDIR.inf"""; StatusMsg: "Uninstalling X64 device driver (this may take a few seconds)..."; Check: IsX64()
+Components: Application; Tasks: Driver; Filename: {sys}\rundll32.exe; Parameters: "{code:GetShortName|{app}\driver\ia64\libusb0.dll},usb_uninstall_service_np_rundll ""{app}\driver\RTL2838UHIDIR.inf"""; StatusMsg: "Uninstalling IA64 device driver (this may take a few seconds)..."; Check: IsI64()
 
