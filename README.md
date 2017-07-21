@@ -1,3 +1,36 @@
+# PiAware on FreeBSD
+
+Exploring the possibility to run PiAware on a Raspberry Pi powered by FreeBSD.
+
+## Build on FreeBSD
+
+Install dependencies:
+```
+pkg install git gmake pkgconf python3 openssl
+```
+
+Install tcllauncher and tcl libraries:
+```
+pkg install tcllauncher tclsh86 itcl tcllib tcltls
+# chmod a+x /usr/local/bin/tcllauncher
+# chmod a+x /usr/local/bin/tclsh8.6
+```
+
+Build and install piaware:
+```
+git clone https://github.com/yzgyyang/piaware
+cd piaware
+gmake install
+```
+
+## Status
+
+Changes required for Linux-specific commands in `package/fa_sysinfo.tcl`. Fortunately they are just health info and PiAware will probably survive without it.  
+See discussions here: https://github.com/flightaware/piaware/issues/37
+
+## Original README
+
+```
 PiAware
 ===
 
@@ -174,4 +207,4 @@ The current state can be checked with:
 FlightAware
 ---
 FlightAware has released over a dozen applications  (under the free and liberal BSD license) into the open source community. FlightAware's repositories are available on GitHub for public use, discussion, bug reports, and contribution. Read more at https://flightaware.com/about/code/
-
+```
